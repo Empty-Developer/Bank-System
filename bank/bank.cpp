@@ -9,6 +9,6 @@ public:
     string name;
 
     void Valerka() {
-        cout << "Банк: " << name;
+        cout << "Банк: " << name << endl;
     }
 };
