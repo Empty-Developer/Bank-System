@@ -31,6 +31,13 @@ The project follows a **modular monolith** design with **4 core modules**:
 | **Logger** | Thread-safe console/file output |
 
 
+
+## Contributors
+
+<a href="https://github.com/Empty-Developer/Bank-System/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=Empty-Developer/Bank-System" />
+</a>
+
 ## Algorithms
 
 | Feature | Implementation | Complexity |
