@@ -119,7 +119,7 @@ class Bank {
   }
 
   Stats getStats() {
-    int totalBalance = 0;
+    double totalBalance = 0.0;
 
     shared_lock lock(accountsMtx);
 

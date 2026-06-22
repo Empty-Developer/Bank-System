@@ -50,9 +50,10 @@ int main() {
         }
         else if (command == "stats") {
             Stats s = bank.getStats();
-            cout << "Total Balance: " << s.getTotalBalance() << endl;
-            cout << "Success: " << s.getSuccessCount() << endl;
-            cout << "Failed: " << s.getFailedCount() << endl;
+            cout << "Total Balance: " << s.totalBalance << endl;
+            cout << "Success: " << s.successTransactions << endl;
+            cout << "Failed: " << s.failedTransactions << endl;
+            cout << "Active Threads: " << s.activeClientThreads << endl;
         }
         else if (command == "top") {
             int N;
