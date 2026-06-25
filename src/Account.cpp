@@ -1,67 +1,76 @@
 #include "Account.h"
-#include <iostream>
-#include <algorithm>
-#include <shared_mutex>
+#include <mutex>
 
-// STUB: Account implementation with logging only
-// No real balance operations, only console output for demonstration
+using namespace std;
 
-// constructors
-Account::Account() : id_(0), name_(""), balance_(0.0) {
-    std::cout << "[Account] Default constructor" << std::endl;
-}
+Account::Account() : id_(0), name_(""), balance_(0.0) {}
 
-Account::Account(int id, const std::string& name) : id_(id), name_(name), balance_(0.0) {
-    std::cout << "[Account] Constructor: id=" << id << ", name=" << name << std::endl;
-}
+Account::Account(int id, const string& name)
+    : id_(id), name_(name), balance_(0.0) {}
 
-Account::Account(const Account& other) 
-    : id_(other.id_), name_(other.name_), balance_(other.balance_) {
-    std::cout << "[Account] Copy constructor" << std::endl;
+Account::Account(const Account& other) {
+    shared_lock<shared_mutex> lock(other.mtx_);
+    id_ = other.id_;
+    name_ = other.name_;
+    balance_ = other.balance_;
+    history_ = other.history_;
 }
 
 Account& Account::operator=(const Account& other) {
-    std::cout << "[Account] Copy assignment" << std::endl;
     if (this != &other) {
+        unique_lock<shared_mutex> thisLock(mtx_, defer_lock);
+        shared_lock<shared_mutex> otherLock(other.mtx_, defer_lock);
+        lock(thisLock, otherLock);
+
         id_ = other.id_;
         name_ = other.name_;
         balance_ = other.balance_;
+        history_ = other.history_;
     }
+
     return *this;
 }
 
-// getters (stub)
 int Account::getId() const {
-    std::cout << "[Account] getId() -> " << id_ << std::endl;
     return id_;
 }
 
-std::string Account::getName() const {
-    std::cout << "[Account] getName() -> " << name_ << std::endl;
+string Account::getName() const {
     return name_;
 }
 
 double Account::getBalance() const {
-    std::cout << "[Account] getBalance() -> " << balance_ << std::endl;
+    shared_lock<shared_mutex> lock(mtx_);
     return balance_;
 }
 
-// core operations (stub)
 bool Account::withdraw(double amount) {
-    std::cout << "[Account] withdraw(" << amount << ")" << std::endl;
-    return true;  // stub: always returns true
+    unique_lock<shared_mutex> lock(mtx_);
+    if (amount <= 0 || balance_ < amount) {
+        return false;
+    }
+
+    balance_ -= amount;
+    history_.push_back("Withdraw: -" + to_string(amount));
+    return true;
 }
 
 void Account::deposit(double amount) {
-    std::cout << "[Account] deposit(" << amount << ")" << std::endl;
+    unique_lock<shared_mutex> lock(mtx_);
+    if (amount <= 0) {
+        return;
+    }
+
+    balance_ += amount;
+    history_.push_back("Deposit: +" + to_string(amount));
 }
 
-// history management (stub)
-void Account::addHistory(const std::string& record) {
-    std::cout << "[Account] addHistory: " << record << std::endl;
+void Account::addHistory(const string& record) {
+    unique_lock<shared_mutex> lock(mtx_);
+    history_.push_back(record);
 }
 
-std::vector<std::string> Account::getHistory() const {
-    std::cout << "[Account] getHistory()" << std::endl;
-    return {};
+vector<string> Account::getHistory() const {
+    shared_lock<shared_mutex> lock(mtx_);
+    return vector<string>(history_.begin(), history_.end());
 }
