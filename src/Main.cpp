@@ -27,6 +27,12 @@ int main() {
     int acc4 = bank.createAccount("Diana");
     int acc5 = bank.createAccount("Eve");
 
+    bank.depositToAccount(acc1, 1000);
+    bank.depositToAccount(acc2, 1000);
+    bank.depositToAccount(acc3, 1000);
+    bank.depositToAccount(acc4, 1000);
+    bank.depositToAccount(acc5, 1000);
+
     cout << "Created accounts: " << acc1 << ", " << acc2 << ", " << acc3 << ", " << acc4 << ", " << acc5 << endl;
 
     // start 5 client threads

@@ -54,6 +54,15 @@ class Bank {
     return ids;
   }
 
+  bool depositToAccount(int id, double amount) {
+      unique_lock lock(accountsMtx);
+      auto it = accounts.find(id);
+      if (it == accounts.end() || amount <= 0) {
+          return false;
+      }
+      it->second.deposit(amount);
+      return true;
+  }
 
   bool transfer(int from, int to, double amount) {
     if (amount <= 0){
@@ -128,5 +137,14 @@ class Bank {
     }
 
     return Stats(totalBalance, successCount, failedCount, 0);
+  }
+
+  double getBalance(int id) const {
+    shared_lock lock(accountsMtx);
+    auto it = accounts.find(id);
+    if (it == accounts.end()) {
+        return -1.0;
+    }
+    return it->second.getBalance();
   }
 };

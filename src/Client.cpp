@@ -38,22 +38,20 @@ class ClientModule {
             int from = ids[rand() % ids.size()];
             int to   = ids[rand() % ids.size()];
             if (from == to) continue;
-
             
             double amount = rand() % 500 + 1;
-
+            
             bool ok = bank.transfer(from, to, amount);
+            double senderBalance = bank.getBalance(from);
+            double receiverBalance = bank.getBalance(to);
 
             // log
             string result = ok ? " sent " : " failed ";
             logger.log(ok ? "INFO" : "WARN",
-                "Client #" + to_string(clientId) +
-                result + to_string((int)amount) +
-                " from " + to_string(from) +
-                " to " + to_string(to));
+                "Client #" + to_string(clientId) + result + to_string((int)amount) +
+                " from " + to_string(from) + " ($" + to_string((int)senderBalance) + ")" +
+                " to " + to_string(to) + " ($" + to_string((int)receiverBalance) + ")");
             this_thread::sleep_for(chrono::milliseconds(1000));  // one second delay
         }
-
-        logger.log("INFORMATION", "Client #" + to_string(clientId) + " he's gone");
     }
 };
