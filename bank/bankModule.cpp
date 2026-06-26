@@ -1,6 +1,3 @@
-#include "Account.h"
-#include "Stats.h"
-
 #include <iostream>
 #include <unordered_map>
 #include <vector>
@@ -9,6 +6,15 @@
 #include <algorithm>
 
 using namespace std;
+
+/*
+  where you finished
+  pls delete this class and join all in main cpp file EGOR
+*/ 
+
+// temporary class
+class Account;
+class Stats;
 
 class Bank {
   private:
@@ -43,25 +49,6 @@ class Bank {
     accounts.emplace(id, Account(id, name));
 
     return id;
-  }
-
-  vector<int> getAccountIds() {
-    shared_lock lock(accountsMtx);
-    vector<int> ids;
-    for (const auto& [id, account] : accounts) {
-      ids.push_back(id);
-    }
-    return ids;
-  }
-
-  bool depositToAccount(int id, double amount) {
-      unique_lock lock(accountsMtx);
-      auto it = accounts.find(id);
-      if (it == accounts.end() || amount <= 0) {
-          return false;
-      }
-      it->second.deposit(amount);
-      return true;
   }
 
   bool transfer(int from, int to, double amount) {
@@ -128,7 +115,7 @@ class Bank {
   }
 
   Stats getStats() {
-    double totalBalance = 0.0;
+    int totalBalance = 0;
 
     shared_lock lock(accountsMtx);
 
@@ -136,26 +123,8 @@ class Bank {
         totalBalance += account.getBalance(); // all money all users
     }
 
-    Stats stats;
-    stats.updateStats(totalBalance, successCount, failedCount, 0);
-    return stats;
+    return Stats(totalBalance, successCount, failedCount, 0);
   }
-
-  double getBalance(int id) const {
-    shared_lock lock(accountsMtx);
-    auto it = accounts.find(id);
-    if (it == accounts.end()) {
-        return -1.0;
-    }
-    return it->second.getBalance();
-  }
-
-  vector<string> getHistory(int id) const {
-    shared_lock lock(accountsMtx);
-    auto it = accounts.find(id);
-    if (it == accounts.end()) {
-        return {};
-    }
-    return it->second.getHistory();
 }
-};
+
+
