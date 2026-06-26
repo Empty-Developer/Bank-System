@@ -14,4 +14,5 @@ public:
     std::vector<Account*> topAccounts(size_t N);
     Stats getStats();
     double getBalance(int id) const;
+    std::vector<std::string> getHistory(int id) const;
 };  

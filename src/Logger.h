@@ -16,7 +16,7 @@ private:
     std::unique_ptr<std::ofstream> logFile_; // Log file (optional)
 
 public:
-    explicit Logger(const std::string& filename = "");
+    explicit Logger(const std::string& filename = "bank.log");
     ~Logger();
 
     // The main logging method
@@ -28,4 +28,4 @@ public:
     void logError(const std::string& errorMessage);
 };
 
-#endif // LOGGER_H
+#endif

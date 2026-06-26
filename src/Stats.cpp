@@ -4,18 +4,13 @@
 using namespace std;
 
 // Constructor: initialize all counters with zeros
-Stats::Stats() 
-    : totalBalance(0.0)
-    , successTransactions(0)
-    , failedTransactions(0)
-    , activeClientThreads(0) {
-}
+Stats::Stats() : totalBalance(0.0), successCount(0), failedCount(0), activeClientThreads(0) {}
 
 // Method for updating statistics (used when requesting stats)
 void Stats::updateStats(double balance, int success, int failed, int activeThreads) {
     totalBalance = balance;
-    successTransactions = success;
-    failedTransactions = failed;
+    successCount = success;
+    failedCount = failed;
     activeClientThreads = activeThreads;
 }
 
@@ -26,12 +21,12 @@ double Stats::getTotalBalance() const {
 
 // Getting the number of successful transactions
 long long Stats::getSuccessTransactions() const {
-    return successTransactions;
+    return successCount;
 }
 
 // Getting the number of rejected transactions
 long long Stats::getFailedTransactions() const {
-    return failedTransactions;
+    return failedCount;
 }
 
 // Getting the number of active clients
@@ -42,11 +37,11 @@ int Stats::getActiveClientThreads() const {
 // Formatted representation of statistics as a string
 string Stats::toString() const {
     stringstream ss;
-    ss << "=== СТАТИСТИКА БАНКА ===\n"
-       << "Суммарный баланс: " << totalBalance << "\n"
-       << "Успешных транзакций: " << successTransactions << "\n"
-       << "Отклоненных транзакций: " << failedTransactions << "\n"
-       << "Активных клиентских потоков: " << activeClientThreads;
+    ss << "BANK STATISTICS\n"
+       << "Total balance: " << totalBalance << "\n"
+       << "Successful transactions: " << successCount << "\n"
+       << "Rejected transactions: " << failedCount << "\n"
+       << "Active client streams: " << activeClientThreads;
     return ss.str();
 }
 

@@ -10,9 +10,9 @@ using namespace std;
 Logger::Logger(const string& filename) 
     : logFile_(filename.empty() ? nullptr : new ofstream(filename, ios::app)) {
     if (logFile_ && logFile_->is_open()) {
-        log( "INFO", "Логгер инициализирован. Файл: " + filename );
+        log( "INFO", "Logger initialized. File: " + filename );
     } else if (!filename.empty()) {
-            cerr << "Ошибка: не удалось открыть файл лога: " << filename << endl;
+            cerr << "Error: could not open log file: " << filename << endl;
         logFile_.reset();
     }
 }
@@ -20,7 +20,7 @@ Logger::Logger(const string& filename)
 // Destructor: closes the log file
 Logger::~Logger() {
     if (logFile_ && logFile_->is_open()) {
-        log( "INFO", "Логгер завершает работу." );
+        log( "INFO", "Logger shutting down." );
         logFile_->close();
     }
 }
@@ -43,10 +43,7 @@ void Logger::log(const string& level, const string& message) {
     
     string logEntry = ss.str();
     
-    // Output to the console
-    cout << logEntry << endl;
-    
-    // Output to a file if the file is open
+    // Output to file
     if (logFile_ && logFile_->is_open()) {
         (*logFile_) << logEntry << endl;
         logFile_->flush();
@@ -55,17 +52,17 @@ void Logger::log(const string& level, const string& message) {
 
 // Logging operations with details
 void Logger::logTransaction(int fromId, int toId, double amount, bool success) {
-    string status = success ? "УСПЕШНО" : "ОТКЛОНЕНО";
+    string status = success ? "SUCCESS" : "REJECTED";
     stringstream ss;
-    ss << "Перевод " << amount << " со счета " << fromId 
-       << " на счет " << toId << " - " << status;
+    ss << "Transfer " << amount << " from account " << fromId 
+       << " to account " << toId << " - " << status;
     log("TRANSACTION", ss.str());
 }
 
 // Logging account creation
 void Logger::logAccountCreation(const string& name, int id) {
     stringstream ss;
-    ss << "Создан счет ID=" << id << ", владелец: \"" << name << "\"";
+    ss << "Account created ID=" << id << ", owner: \"" << name << "\"";
     log("ACCOUNT", ss.str());
 }
 

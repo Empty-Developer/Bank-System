@@ -136,7 +136,9 @@ class Bank {
         totalBalance += account.getBalance(); // all money all users
     }
 
-    return Stats(totalBalance, successCount, failedCount, 0);
+    Stats stats;
+    stats.updateStats(totalBalance, successCount, failedCount, 0);
+    return stats;
   }
 
   double getBalance(int id) const {
@@ -147,4 +149,13 @@ class Bank {
     }
     return it->second.getBalance();
   }
+
+  vector<string> getHistory(int id) const {
+    shared_lock lock(accountsMtx);
+    auto it = accounts.find(id);
+    if (it == accounts.end()) {
+        return {};
+    }
+    return it->second.getHistory();
+}
 };

@@ -10,9 +10,9 @@
  * failedTransactions, activeClientThreads
  */
 struct Stats {
-    double totalBalance;          // Total balance of all accounts
-    long long successTransactions; // Number of successful transactions
-    long long failedTransactions;  // Number of rejected transactions
+    double totalBalance;              // Total balance of all accounts
+    long long successCount;          // Number of successful transactions
+    long long failedCount;          // Number of rejected transactions
     int activeClientThreads;       // Number of active client streams
 
     Stats();
@@ -29,4 +29,4 @@ struct Stats {
 
 std::ostream& operator<<(std::ostream& os, const Stats& stats);
 
-#endif // STATS_H
+#endif
