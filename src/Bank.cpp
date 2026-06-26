@@ -7,6 +7,7 @@
 #include <string>
 #include <shared_mutex>
 #include <algorithm>
+#include <atomic>
 
 using namespace std;
 
@@ -15,8 +16,8 @@ class Bank {
     unordered_map<int, Account> accounts;
     mutable std::shared_mutex accountsMtx;
 
-    int successCount = 0;
-    int failedCount = 0;
+    atomic<int> successCount{0};
+    atomic<int> failedCount{0};
 
   public:
   // methods from UML
@@ -64,15 +65,14 @@ class Bank {
       return true;
   }
 
-  bool transfer(int from, int to, double amount) {
+ bool transfer(int from, int to, double amount) {
     if (amount <= 0){
         ++failedCount;
         return false;
     }
 
-    unique_lock lock(accountsMtx);
-
     // searching account
+    shared_lock readLock(accountsMtx);
     auto sender = accounts.find(from);
     auto receiver = accounts.find(to);
 
@@ -82,7 +82,20 @@ class Bank {
       return false;
     }
 
-    if (!sender->second.withdraw(amount)){ // a little money
+    // get references to accounts
+    Account& fromAcc = sender->second;
+    Account& toAcc = receiver->second;
+    readLock.unlock();
+
+    // to prevent deadlock
+    int first = std::min(from, to);
+    int second = std::max(from, to);
+
+    unique_lock<shared_mutex> lock1(first == from ? fromAcc.getMutex() : toAcc.getMutex());
+    unique_lock<shared_mutex> lock2(second == from ? fromAcc.getMutex() : toAcc.getMutex());
+
+    // now safe to check and modify balances
+    if (fromAcc.getBalanceUnsafe() < amount){ // a little money
       ++failedCount;
       return false;
     }
@@ -90,7 +103,8 @@ class Bank {
       if user have money. 
       append money
     */
-    receiver->second.deposit(amount); 
+    fromAcc.withdrawUnsafe(amount);
+    toAcc.depositUnsafe(amount); 
 
     ++successCount;
 
@@ -108,20 +122,17 @@ class Bank {
     }
 
     // sort a total account 
-    for (size_t i = 0; i < result.size(); ++i) {
-      for (size_t j = 0; j + 1 < result.size() - i; ++j) {
-        if (result[j]->getBalance() < result[j + 1]->getBalance()) {
-            swap(result[j], result[j + 1]);
-        }
-      }
-    }
-
-    if (result.size() > N){ 
-      /*
-        if N = 3 but have 10 acc
-        we output 3 acc
-      */
-      result.resize(N);
+    if (N < result.size()) {
+        std::partial_sort(result.begin(), result.begin() + N, result.end(),
+            [](const Account* a, const Account* b) {
+                return a->getBalance() > b->getBalance();
+            });
+        result.resize(N);
+    } else {
+        std::sort(result.begin(), result.end(),
+            [](const Account* a, const Account* b) {
+                return a->getBalance() > b->getBalance();
+            });
     }
 
     return result;

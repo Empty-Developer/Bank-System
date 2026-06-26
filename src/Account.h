@@ -27,4 +27,8 @@ public:
     void deposit(double amount);
     void addHistory(const string& record);
     vector<string> getHistory() const;
+    shared_mutex& getMutex() const { return mtx_; }
+    double getBalanceUnsafe() const { return balance_; }
+    bool withdrawUnsafe(double amount);
+    void depositUnsafe(double amount);
 };

@@ -51,6 +51,9 @@ bool Account::withdraw(double amount) {
     }
 
     balance_ -= amount;
+    if (history_.size() >= 50) {
+        history_.pop_front();
+    }
     history_.push_back("Withdraw: -" + to_string(amount));
     return true;
 }
@@ -62,15 +65,44 @@ void Account::deposit(double amount) {
     }
 
     balance_ += amount;
+    if (history_.size() >= 50) {
+        history_.pop_front();
+    }
     history_.push_back("Deposit: +" + to_string(amount));
 }
 
 void Account::addHistory(const string& record) {
     unique_lock<shared_mutex> lock(mtx_);
+    if (history_.size() >= 50) {
+        history_.pop_front();
+    }
     history_.push_back(record);
 }
 
 vector<string> Account::getHistory() const {
     shared_lock<shared_mutex> lock(mtx_);
     return vector<string>(history_.begin(), history_.end());
+}
+
+bool Account::withdrawUnsafe(double amount) {
+    if (amount <= 0 || balance_ < amount) {
+        return false;
+    }
+    balance_ -= amount;
+    if (history_.size() >= 50) {
+        history_.pop_front();
+    }
+    history_.push_back("Withdraw: -" + to_string(amount));
+    return true;
+}
+    
+void Account::depositUnsafe(double amount) {
+    if (amount <= 0) {
+        return;
+    }
+    balance_ += amount;
+    if (history_.size() >= 50) {
+        history_.pop_front();
+    }
+    history_.push_back("Deposit: +" + to_string(amount));
 }
