@@ -1,37 +1,57 @@
 #include "Stats.h"
-#include <iostream>
+#include <sstream>
 
-// STUB: Stats implementation with logging only
-// Returns default values, only console output for demonstration
+using namespace std;
 
-// constructors
-Stats::Stats() : totalBalance_(0), successCount_(0), failedCount_(0), activeThreads_(0) {
-    std::cout << "[Stats] Default constructor" << std::endl;
+// Constructor: initialize all counters with zeros
+Stats::Stats() 
+    : totalBalance(0.0)
+    , successTransactions(0)
+    , failedTransactions(0)
+    , activeClientThreads(0) {
 }
 
-Stats::Stats(int totalBalance, int successCount, int failedCount, int activeThreads)
-    : totalBalance_(totalBalance), successCount_(successCount), 
-      failedCount_(failedCount), activeThreads_(activeThreads) {
-    std::cout << "[Stats] Constructor" << std::endl;
+// Method for updating statistics (used when requesting stats)
+void Stats::updateStats(double balance, int success, int failed, int activeThreads) {
+    totalBalance = balance;
+    successTransactions = success;
+    failedTransactions = failed;
+    activeClientThreads = activeThreads;
 }
 
-// getters (stub)
-int Stats::getTotalBalance() const {
-    std::cout << "[Stats] getTotalBalance() -> " << totalBalance_ << std::endl;
-    return totalBalance_;
+// Getting the total balance
+double Stats::getTotalBalance() const {
+    return totalBalance;
 }
 
-int Stats::getSuccessCount() const {
-    std::cout << "[Stats] getSuccessCount() -> " << successCount_ << std::endl;
-    return successCount_;
+// Getting the number of successful transactions
+long long Stats::getSuccessTransactions() const {
+    return successTransactions;
 }
 
-int Stats::getFailedCount() const {
-    std::cout << "[Stats] getFailedCount() -> " << failedCount_ << std::endl;
-    return failedCount_;
+// Getting the number of rejected transactions
+long long Stats::getFailedTransactions() const {
+    return failedTransactions;
 }
 
-int Stats::getActiveThreads() const {
-    std::cout << "[Stats] getActiveThreads() -> " << activeThreads_ << std::endl;
-    return activeThreads_;
+// Getting the number of active clients
+int Stats::getActiveClientThreads() const {
+    return activeClientThreads;
+}
+
+// Formatted representation of statistics as a string
+string Stats::toString() const {
+    stringstream ss;
+    ss << "=== СТАТИСТИКА БАНКА ===\n"
+       << "Суммарный баланс: " << totalBalance << "\n"
+       << "Успешных транзакций: " << successTransactions << "\n"
+       << "Отклоненных транзакций: " << failedTransactions << "\n"
+       << "Активных клиентских потоков: " << activeClientThreads;
+    return ss.str();
+}
+
+// Overloading the output operator for convenience
+ostream& operator<<(ostream& os, const Stats& stats) {
+    os << stats.toString();
+    return os;
 }

@@ -59,6 +59,7 @@ int main() {
             cout << "Total Balance: " << s.getTotalBalance() << endl;
             cout << "Success: " << s.getSuccessCount() << endl;
             cout << "Failed: " << s.getFailedCount() << endl;
+            cout << "Active" << s.getActiveClientThreads() << endl;
         }
         else if (command == "top") {
             int N;
